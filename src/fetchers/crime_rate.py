@@ -76,7 +76,7 @@ class CrimeRateFetcher:
 if __name__ == '__main__':
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/rpk/statfin_rpk_pxt_13it.px'
-    JSON_PARAMS = '../config/crime_rate.json'
-    DB = '../db/combined_db.sqlite3'
+    JSON_PARAMS = '../../config/crime_rate.json'
+    DB = '../../db/combined_db.sqlite3'
     f = CrimeRateFetcher(api_url=URL, query_parameters_file=JSON_PARAMS, db_name=DB)
     f.fetch_parse_data()
