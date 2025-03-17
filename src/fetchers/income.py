@@ -74,8 +74,8 @@ class IncomeFetcher:
 if __name__ == '__main__':
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/tjt/statfin_tjt_pxt_118w.px'
-    JSON_PARAMS = '../config/income.json'
-    DB = '../db/combined_db.sqlite3'
+    JSON_PARAMS = '../../config/income.json'
+    DB = '../../db/combined_db.sqlite3'
     f = IncomeFetcher(api_url=URL, query_parameters_file=JSON_PARAMS, db_name=DB)
     f.fetch_parse_save()
 
