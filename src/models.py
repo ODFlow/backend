@@ -27,19 +27,50 @@ class DemographicsModel(Base):
 # Traffic accidents
 class TrafficAccidents(Base):
     __tablename__ = "traffic_accidents"
-    accident_id = Column(Integer, primary_key=True, index=True)
+
+    id = Column(Integer, primary_key=True, index=True)
     area = Column(String, index=True)
     year = Column(Integer)
-    accident_type = Column(String)
+    description = Column(String)
     value = Column(Integer)
+
 
 class EmploymentRate(Base):
     __tablename__ = "employment_rate"
-    id = Column(Integer, primary_key=True)
-    area = Column(String, primary_key=True)
+
+    id = Column(Integer, primary_key=True, index=True)
+    area = Column(String, index=True)
     timeframe = Column(String)
     description = Column(String)
     value = Column(Float)
+
+
+class CrimeRate(Base):
+    __tablename__ = "crime_rate"
+
+    id = Column(Integer, primary_key=True, index=True)
+    area = Column(String, index=True)
+    timeframe = Column(String)
+    description = Column(String)
+    value = Column(Integer)
+
+
+class Income(Base):
+    __tablename__ = "income"
+
+    id = Column(Integer, primary_key=True, index=True)
+    area = Column(String, index=True)
+    description = Column(String)
+    value = Column(Integer)
+
+class Education(Base):
+    __tablename__ = "education"
+
+    id = Column(Integer, primary_key=True, index=True)
+    area = Column(String, index=True)
+    age = Column(String)
+    description = Column(String)
+    value = Column(Integer)
 
 def get_db():
     db = SessionLocal()
