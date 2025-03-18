@@ -34,9 +34,7 @@ jobs:
         run: find ./src -name "*.py"
 
       - name: Lint with PyLint
-        run: |
-          shopt -s globstar  
-          pylint ./src/**/*.py > pylint_out.txt
+        run: pylint $(git ls-files '*.py')
         working-directory: ./
 
       - name: Run tests
