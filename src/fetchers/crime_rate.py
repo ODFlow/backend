@@ -40,16 +40,29 @@ class CrimeRateFetcher:
     @staticmethod
     def parse_data(data: Dict[str, Any]) -> pd.DataFrame:
         area = list(data['dimension']['Kunta']['category']['label'].values())
-        description = list(data['dimension']['Rikosryhmä ja teonkuvauksen tarkenne']['category']['label'].values())
+        raw_description = list(data['dimension']['Rikosryhmä ja teonkuvauksen tarkenne']['category']['label'].values())
         timeframe = list(data['dimension']['Kuukausi']['category']['label'].values())
+        clean_description = []
+
+        for i in raw_description:
+            if ' ' in i:
+                first_space_index = i.find(' ')
+                if i[:first_space_index].isdigit():
+                    clean_description.append(i[first_space_index+1:])
+                else:
+                    clean_description.append(i)
+            else:
+                clean_description.append(i)
+
+
+        combination = product(timeframe, area, clean_description)
+        records = []
         values = data['value']
 
-        combination = product(timeframe, area, description)
-        records = []
 
-        for i, (timeframe, area, description) in enumerate(combination):
+        for i, (timeframe, area, clean_description) in enumerate(combination):
             val = values[i]
-            records.append((i, area, timeframe, description, val, LAST_UPDATED_TIME))
+            records.append((i, area, timeframe, clean_description, val, LAST_UPDATED_TIME))
 
         return pd.DataFrame(records, columns=['id', 'area', 'timeframe', 'description', 'value', 'last_updated'])
 
