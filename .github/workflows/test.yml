@@ -31,7 +31,8 @@ jobs:
         working-directory: ./
 
       - name: Lint with PyLint
-        run: pylint $(git ls-files '*.py') > pylint_out.txt
+        run: pylint ./src/**/*.py > pylint_out.txt
+        working-directory: ./
 
       - name: Run tests
         run: python base_test.py
