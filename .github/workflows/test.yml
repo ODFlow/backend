@@ -41,6 +41,7 @@ jobs:
         with:
           name: pylint
           path: pylint.txt
+          retention-days: 1
 
       - name: Run tests
         run: python base_test.py
