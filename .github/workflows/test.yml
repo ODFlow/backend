@@ -19,14 +19,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Python Set up
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.13'
 
       - name: Install Dep
-        run:
-          python -m pip install --upgrade pip && pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip && \ 
+          pip install -r requirements.txt && \
+          pip install pylint
         working-directory: ./
+
+      - name: Lint with PyLint
+        run: pylint $(git ls-files '*.py') > pylint_out.txt
 
       - name: Run tests
         run: python base_test.py
