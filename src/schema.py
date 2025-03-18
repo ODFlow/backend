@@ -38,11 +38,14 @@ class EducationSchema:
 @strawberry.type
 class Query:
 
+
     @strawberry.field
     def demographics_by_area(self, area: str) -> List[DemographicSchema]:
         db = next(get_db())
         demographics = db.query(DemographicsModel).filter(DemographicsModel.area == area).all()
+
         return demographics
+
 
 
     @strawberry.field
@@ -55,12 +58,15 @@ class Query:
 
         return EmploymentSchema(description="average employment rate", area=area, value=round(employment_rate_mean, 2))
 
+
+
     @strawberry.field
     def traffic_accidents(self, area: str) -> List[TrafficAccidentsSchema]:
         db = next(get_db())
         traffic_accidents = db.query(TrafficAccidents).filter(TrafficAccidents.area == area).all()
 
         return traffic_accidents
+
 
 
     @strawberry.field
@@ -84,16 +90,11 @@ class Query:
 
 
 
-
-
-
-        return results
-
     @strawberry.field
     def education(self, area: str) -> List[EducationSchema]:
         db = next(get_db())
-
         education = db.query(Education).filter(Education.area == area).all()
+
         return education
 
 
