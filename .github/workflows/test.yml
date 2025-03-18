@@ -34,7 +34,7 @@ jobs:
         run: find ./src -name "*.py"
 
       - name: Lint with PyLint
-        run: pylint $(git ls-files '*.py') || true
+        run: pylint $(git ls-files '*.py') --output=pylint.txt || true
 
       - name: Run tests
         run: python base_test.py
