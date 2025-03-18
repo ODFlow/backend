@@ -40,4 +40,4 @@ jobs:
       - name: Test success
         if: success()
         run: |
-          echo "Success
+          echo "Success"
