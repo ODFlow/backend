@@ -37,9 +37,20 @@ class IncomeFetcher:
     @staticmethod
     def parse_data(data: Dict[str, Any]) -> pd.DataFrame:
         area = list(data['dimension']['Alue']['category']['label'].values())
-        description = list(data['dimension']['Tiedot']['category']['label'].values())
+        raw_description = list(data['dimension']['Tiedot']['category']['label'].values())
 
-        combinations = product(description, area)
+        clean_description = []
+        for i in raw_description:
+            if ' ' in i:
+                first_space_ind = i.find(' ')
+                if not i[:first_space_ind].isalpha():
+                    clean_description.append(i[first_space_ind+1:])
+                else:
+                    clean_description.append(i)
+            else:
+                clean_description.append(i)
+
+        combinations = product(clean_description, area)
         values = data['value']
 
         records = []
