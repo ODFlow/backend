@@ -29,13 +29,13 @@ class TrafficAccidentFetcher:
     def create_table(cursor: sqlite3.Cursor):
         cursor.execute('''
                     CREATE TABLE IF NOT EXISTS traffic_accidents (
-                        accident_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                         area TEXT NOT NULL,
                         year TEXT NOT NULL,
-                        accident_type TEXT NOT NULL,
+                        description TEXT NOT NULL,
                         value INTEGER NOT NULL,
                         last_updated TEXT NOT NULL,
-                        UNIQUE (area, year, accident_type)
+                        UNIQUE (area)
                     )
                 ''')
     @staticmethod
@@ -52,7 +52,7 @@ class TrafficAccidentFetcher:
             value = values[idx]
             records.append((idx, area, year, accident_type, value, LAST_UPDATED_TIME))
 
-        return pd.DataFrame(records, columns=['accident_id', 'area', 'year', 'accident_type', 'value', 'last_updated'])
+        return pd.DataFrame(records, columns=['id', 'area', 'year', 'description', 'value', 'last_updated'])
 
     def save_data(self, df: pd.DataFrame):
         conn = sqlite3.connect(self.db_name)

@@ -38,17 +38,28 @@ class EducationFetcher:
     @staticmethod
     def parse_data(data: Dict[str, Any]) -> pd.DataFrame:
         area = list(data['dimension']['Alue']['category']['label'].values())
-        description = list(data['dimension']['Koulutusaste']['category']['label'].values())
+        raw_description = list(data['dimension']['Koulutusaste']['category']['label'].values())
         age = list(data['dimension']['Ikä']['category']['label'].values())
+        clean_description = []
 
-        combinations = product(area, age, description)
+        for i in raw_description:
+            if ' ' in i:
+                first_space_pos = i.find(' ')
+                if i[:first_space_pos].isdigit():
+                    clean_description.append(i[first_space_pos+1:])
+                else:
+                    clean_description.append(i)
+            else:
+                clean_description.append(i)
+
+
+        combinations = product(area, age, clean_description)
         values = data['value']
-
         records = []
 
-        for idx, (area, age, description) in enumerate(combinations):
+        for idx, (area, age, clean_description) in enumerate(combinations):
             val = values[idx]
-            records.append((idx, area, age, description, val, LAST_UPDATED_TIME))
+            records.append((idx, area, age, clean_description, val, LAST_UPDATED_TIME))
 
         return pd.DataFrame(records, columns=['id', 'area', 'age', 'description', 'value', 'last_updated'])
 
