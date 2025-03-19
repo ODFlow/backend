@@ -10,6 +10,7 @@ import requests
 
 
 class CrimeRateFetcher:
+
     def __init__(self, api_url: str, query_parameters_file: str, db_name: str):
         self.api_url = api_url
         self.query_parameters_file = query_parameters_file
@@ -37,34 +38,42 @@ class CrimeRateFetcher:
                         UNIQUE (area)
                     )
                 ''')
+
     @staticmethod
     def parse_data(data: Dict[str, Any]) -> pd.DataFrame:
         area = list(data['dimension']['Kunta']['category']['label'].values())
-        raw_description = list(data['dimension']['Rikosryhmä ja teonkuvauksen tarkenne']['category']['label'].values())
-        timeframe = list(data['dimension']['Kuukausi']['category']['label'].values())
+        raw_description = list(
+            data['dimension']['Rikosryhmä ja teonkuvauksen tarkenne']['category']['label'].values()
+        )
+        timeframe = list(
+            data['dimension']['Kuukausi']['category']['label'].values()
+        )
         clean_description = []
 
         for i in raw_description:
             if ' ' in i:
                 first_space_index = i.find(' ')
                 if i[:first_space_index].isdigit():
-                    clean_description.append(i[first_space_index+1:])
+                    clean_description.append(i[first_space_index + 1:])
                 else:
                     clean_description.append(i)
             else:
                 clean_description.append(i)
 
-
         combination = product(timeframe, area, clean_description)
         records = []
         values = data['value']
 
-
         for i, (timeframe, area, clean_description) in enumerate(combination):
             val = values[i]
-            records.append((i, area, timeframe, clean_description, val, LAST_UPDATED_TIME))
+            records.append(
+                (i, area, timeframe, clean_description, val, LAST_UPDATED_TIME))
 
-        return pd.DataFrame(records, columns=['id', 'area', 'timeframe', 'description', 'value', 'last_updated'])
+        return pd.DataFrame(records,
+                            columns=[
+                                'id', 'area', 'timeframe', 'description',
+                                'value', 'last_updated'
+                            ])
 
     def save_data(self, df: pd.DataFrame):
         conn = sqlite3.connect(self.db_name)
@@ -75,6 +84,7 @@ class CrimeRateFetcher:
 
         conn.commit()
         conn.close()
+
     def fetch_parse_data(self):
         try:
             d = self.fetch_data()
@@ -86,10 +96,14 @@ class CrimeRateFetcher:
 
         except Exception as e:
             print(f"{e}")
+
+
 if __name__ == '__main__':
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/rpk/statfin_rpk_pxt_13it.px'
     JSON_PARAMS = '../../config/crime_rate.json'
     DB = '../../db/combined_db.sqlite3'
-    f = CrimeRateFetcher(api_url=URL, query_parameters_file=JSON_PARAMS, db_name=DB)
+    f = CrimeRateFetcher(api_url=URL,
+                         query_parameters_file=JSON_PARAMS,
+                         db_name=DB)
     f.fetch_parse_data()

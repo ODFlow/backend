@@ -1,4 +1,4 @@
-import  json
+import json
 import sqlite3
 from datetime import datetime
 from itertools import product
@@ -7,7 +7,9 @@ from typing import Dict, Any
 import pandas as pd
 import requests
 
+
 class EducationFetcher:
+
     def __init__(self, api_url: str, query_parameters_file: str, db_name: str):
         self.api_url = api_url
         self.query_parameters_file = query_parameters_file
@@ -35,10 +37,12 @@ class EducationFetcher:
                         UNIQUE (area)
                     )
                 ''')
+
     @staticmethod
     def parse_data(data: Dict[str, Any]) -> pd.DataFrame:
         area = list(data['dimension']['Alue']['category']['label'].values())
-        raw_description = list(data['dimension']['Koulutusaste']['category']['label'].values())
+        raw_description = list(
+            data['dimension']['Koulutusaste']['category']['label'].values())
         age = list(data['dimension']['Ikä']['category']['label'].values())
         clean_description = []
 
@@ -46,12 +50,11 @@ class EducationFetcher:
             if ' ' in i:
                 first_space_pos = i.find(' ')
                 if i[:first_space_pos].isdigit():
-                    clean_description.append(i[first_space_pos+1:])
+                    clean_description.append(i[first_space_pos + 1:])
                 else:
                     clean_description.append(i)
             else:
                 clean_description.append(i)
-
 
         combinations = product(area, age, clean_description)
         values = data['value']
@@ -59,9 +62,14 @@ class EducationFetcher:
 
         for idx, (area, age, clean_description) in enumerate(combinations):
             val = values[idx]
-            records.append((idx, area, age, clean_description, val, LAST_UPDATED_TIME))
+            records.append(
+                (idx, area, age, clean_description, val, LAST_UPDATED_TIME))
 
-        return pd.DataFrame(records, columns=['id', 'area', 'age', 'description', 'value', 'last_updated'])
+        return pd.DataFrame(records,
+                            columns=[
+                                'id', 'area', 'age', 'description', 'value',
+                                'last_updated'
+                            ])
 
     def save_data(self, df: pd.DataFrame):
         conn = sqlite3.connect(self.db_name)
@@ -71,6 +79,7 @@ class EducationFetcher:
 
         conn.commit()
         conn.close()
+
     def fetch_parse_save(self):
         try:
             data = self.fetch_data()
@@ -84,12 +93,13 @@ class EducationFetcher:
         except Exception as e:
             print(f"{e}")
 
+
 if __name__ == '__main__':
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/vkour/statfin_vkour_pxt_12bq.px'
     JSON_PARAMS = '../../config/education.json'
     DB = '../../db/combined_db.sqlite3'
-    f = EducationFetcher(api_url=URL, query_parameters_file=JSON_PARAMS, db_name=DB)
+    f = EducationFetcher(api_url=URL,
+                         query_parameters_file=JSON_PARAMS,
+                         db_name=DB)
     f.fetch_parse_save()
-
-
