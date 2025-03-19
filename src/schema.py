@@ -15,6 +15,7 @@ class DemographicSchema:
 class EmploymentSchema:
     description: str
     area: str
+    timeframe: str
     value: float
 
 
@@ -40,7 +41,7 @@ class Query:
 
 
     @strawberry.field
-    def demographics_by_area(self, area: str) -> List[DemographicSchema]:
+    def demographics(self, area: str) -> List[DemographicSchema]:
         db = next(get_db())
         demographics = db.query(DemographicsModel).filter(DemographicsModel.area == area).all()
 
@@ -49,14 +50,34 @@ class Query:
 
 
     @strawberry.field
-    def employment_rate(self, area: str) -> EmploymentSchema:
+    def unemployment_rate(self, area: str) -> List[EmploymentSchema]:
         db = next(get_db())
+        unemployment_data = db.query(EmploymentRate).filter(EmploymentRate.area == area).all()
 
-        employment_rate_all = db.query(EmploymentRate).filter(EmploymentRate.area == area).all()
-        e = [i.value for i in employment_rate_all]
-        employment_rate_mean = mean(e)
+        yearly_data = {}
+        description = "average unemployment rate"
 
-        return EmploymentSchema(description="average employment rate", area=area, value=round(employment_rate_mean, 2))
+        for i in unemployment_data:
+
+            year = i.timeframe[:4]
+            if not description:
+                description = i.description
+            if year not in yearly_data:
+                yearly_data[year] = []
+
+            yearly_data[year].append(i.value)
+
+        res = []
+        for year, val in yearly_data.items():
+            avg_yearly_rate = round(mean(val), 2)
+            res.append(EmploymentSchema(
+                area=area,
+                description=description,
+                timeframe=year,
+                value=avg_yearly_rate
+            ))
+
+        return res
 
 
 
@@ -84,7 +105,13 @@ class Query:
 
         result = []
         for area, year ,total in traffic_accidents:
-            result.append(TrafficAccidentsSchema(description="Total traffic accidents per year", area=area,year=year, value=total))
+            result.append(
+            TrafficAccidentsSchema
+                (
+                description="Total traffic accidents per year",
+                area=area,year=year,
+                value=total)
+                )
 
         return result
 
