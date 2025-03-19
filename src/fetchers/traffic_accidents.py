@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import requests
 import json
@@ -8,9 +9,8 @@ from itertools import product
 from typing import Dict, Any
 
 
-
-
 class TrafficAccidentFetcher:
+
     def __init__(self, api_url: str, query_parameters_file: str, db_name: str):
         self.api_url = api_url
         self.query_parameters_file = query_parameters_file
@@ -38,11 +38,13 @@ class TrafficAccidentFetcher:
                         UNIQUE (area)
                     )
                 ''')
+
     @staticmethod
     def parse_data(data: Dict[str, Any]) -> pd.DataFrame:
         areas = list(data['dimension']['Alue']['category']['label'].values())
         years = list(data['dimension']['Vuosi']['category']['label'].values())
-        accident_types = list(data['dimension']['Tiedot']['category']['label'].values())
+        accident_types = list(
+            data['dimension']['Tiedot']['category']['label'].values())
 
         combinations = product(areas, years, accident_types)
         values = data['value']
@@ -50,9 +52,14 @@ class TrafficAccidentFetcher:
         records = []
         for idx, (area, year, accident_type) in enumerate(combinations):
             value = values[idx]
-            records.append((idx, area, year, accident_type, value, LAST_UPDATED_TIME))
+            records.append(
+                (idx, area, year, accident_type, value, LAST_UPDATED_TIME))
 
-        return pd.DataFrame(records, columns=['id', 'area', 'year', 'description', 'value', 'last_updated'])
+        return pd.DataFrame(records,
+                            columns=[
+                                'id', 'area', 'year', 'description', 'value',
+                                'last_updated'
+                            ])
 
     def save_data(self, df: pd.DataFrame):
         conn = sqlite3.connect(self.db_name)
@@ -77,13 +84,14 @@ class TrafficAccidentFetcher:
             print(f"{e}")
 
 
-
-
 if __name__ == '__main__':
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/ton/statfin_ton_pxt_12qh.px'
-    JSON_PARAMS = '../../config/traffic_accidents_general.json'
-    DB = '../../db/combined_db.sqlite3'
-    f = TrafficAccidentFetcher(api_url=URL, query_parameters_file=JSON_PARAMS, db_name=DB)
+    JSON_PARAMS = os.path.join(BASE_DIR, "config", "traffic_accidents.json")
+    DB = os.path.join(BASE_DIR, "db", "combined_db.sqlite3")
+    f = TrafficAccidentFetcher(api_url=URL,
+                               query_parameters_file=JSON_PARAMS,
+                               db_name=DB)
     f.fetch_parse_save()
-

@@ -3,7 +3,8 @@ from sqlalchemy import Column, Integer, String, Float, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DB_path = os.path.join(os.path.dirname(__file__), '..', 'db', 'combined_db.sqlite3')
+DB_path = os.path.join(os.path.dirname(__file__), '..', 'db',
+                       'combined_db.sqlite3')
 DB_URL = f"sqlite:///{DB_path}"
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
@@ -11,7 +12,6 @@ engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-
 
 
 # Demographics
@@ -63,6 +63,7 @@ class Income(Base):
     description = Column(String)
     value = Column(Integer)
 
+
 class Education(Base):
     __tablename__ = "education"
 
@@ -71,6 +72,7 @@ class Education(Base):
     age = Column(String)
     description = Column(String)
     value = Column(Integer)
+
 
 def get_db():
     db = SessionLocal()

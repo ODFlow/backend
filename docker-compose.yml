@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/:app/src
+      - ./db/:app/db
+      - ./config/:app/config
