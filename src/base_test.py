@@ -1,16 +1,15 @@
 import subprocess
 import sys
 
+
 def run_test():
-    process = subprocess.Popen(
-        ["uvicorn", "main:app"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
+    process = subprocess.Popen(["uvicorn", "main:app"],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               text=True)
 
     try:
-        stdout, stderr = process.communicate(timeout=7)
+        _, _ = process.communicate(timeout=7)
         print(f"Exit code: {process.returncode}")
 
         if process.returncode != 0:
