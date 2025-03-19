@@ -1,4 +1,5 @@
 import json
+import os
 import sqlite3
 from datetime import datetime
 from itertools import product
@@ -95,10 +96,12 @@ class EducationFetcher:
 
 
 if __name__ == '__main__':
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/vkour/statfin_vkour_pxt_12bq.px'
-    JSON_PARAMS = '../../config/education.json'
-    DB = '../../db/combined_db.sqlite3'
+    JSON_PARAMS = os.path.join(BASE_DIR, "config", "education.json")
+    DB = os.path.join(BASE_DIR, "db", "combined_db.sqlite3")
     f = EducationFetcher(api_url=URL,
                          query_parameters_file=JSON_PARAMS,
                          db_name=DB)

@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import requests
 import json
@@ -84,10 +85,12 @@ class TrafficAccidentFetcher:
 
 
 if __name__ == '__main__':
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/ton/statfin_ton_pxt_12qh.px'
-    JSON_PARAMS = '../../config/traffic_accidents_general.json'
-    DB = '../../db/combined_db.sqlite3'
+    JSON_PARAMS = os.path.join(BASE_DIR, "config", "traffic_accidents.json")
+    DB = os.path.join(BASE_DIR, "db", "combined_db.sqlite3")
     f = TrafficAccidentFetcher(api_url=URL,
                                query_parameters_file=JSON_PARAMS,
                                db_name=DB)

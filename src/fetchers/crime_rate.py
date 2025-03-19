@@ -1,8 +1,8 @@
 import json
+import os.path
 import sqlite3
 from datetime import datetime
-from http.client import responses
-from itertools import product, combinations
+from itertools import product
 from typing import Dict, Any
 
 import pandas as pd
@@ -99,10 +99,12 @@ class CrimeRateFetcher:
 
 
 if __name__ == '__main__':
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
     LAST_UPDATED_TIME = datetime.now()
     URL = 'https://pxdata.stat.fi:443/PxWeb/api/v1/en/StatFin/rpk/statfin_rpk_pxt_13it.px'
-    JSON_PARAMS = '../../config/crime_rate.json'
-    DB = '../../db/combined_db.sqlite3'
+    JSON_PARAMS = os.path.join(BASE_DIR, "config", "crime_rate.json")
+    DB = os.path.join(BASE_DIR, "db", "combined_db.sqlite3")
     f = CrimeRateFetcher(api_url=URL,
                          query_parameters_file=JSON_PARAMS,
                          db_name=DB)
