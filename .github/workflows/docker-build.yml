@@ -44,7 +44,6 @@ jobs:
 
 
       - name: Push img
-        if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
           context: .
