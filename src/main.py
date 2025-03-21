@@ -15,7 +15,23 @@ from strawberry.fastapi import GraphQLRouter
 from fetchers.fetcher import run_all_fetchers
 from schema import Query
 
-app = FastAPI()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def cron_job():
+    try:
+        run_all_fetchers()
+    except Exception as e:
+        logger.error("Error %s", e)
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(cron_job,
+                  CronTrigger(month="1,7", day="1", hour="5", minute="0"),
+                  id="data_update",
+                  name="Update all data")
+
 schema = strawberry.federation.Schema(query=Query)
 graphql_app = GraphQLRouter(schema=schema)
 
