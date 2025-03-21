@@ -278,8 +278,8 @@ def run_all_fetchers():
 
     successful_fetchers = sum(1 for s in res.values() if s)
     p = "█" * successful_fetchers + "-" * (len(fetchers) - successful_fetchers)
-    logger.info(f"\n{" - " * 50}\nAll fetchers completed. [{p}] "
-                f"{successful_fetchers}/{len(fetchers)} \n{" - " * 50}")
+    logger.info(f"\n{"-" * 50}\nAll fetchers completed. [{p}] "
+                f"{successful_fetchers}/{len(fetchers)} \n{"-" * 50}")
 
 
 if __name__ == "__main__":
