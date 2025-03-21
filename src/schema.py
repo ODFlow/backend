@@ -1,12 +1,20 @@
-import strawberry
-from typing import List
+# pylint: disable=R0903
+
 from statistics import mean
-from models import DemographicsModel, EmploymentRate, TrafficAccidents, Education, get_db
+from typing import List
+
+import strawberry
 from sqlalchemy.sql import func
+
+from models import DemographicsModel, EmploymentRate, TrafficAccidents, Education, get_db
 
 
 @strawberry.type
 class DemographicSchema:
+    """
+    Represents the schema for demographics information
+    """
+
     description: str
     area: str
     value: float
@@ -14,6 +22,10 @@ class DemographicSchema:
 
 @strawberry.type
 class EmploymentSchema:
+    """
+        Represents the schema for employment information
+    """
+
     description: str
     area: str
     timeframe: str
@@ -22,6 +34,10 @@ class EmploymentSchema:
 
 @strawberry.type
 class TrafficAccidentsSchema:
+    """
+        Represents the schema for Traffic Accidents information
+    """
+
     description: str
     area: str
     year: str
@@ -30,6 +46,10 @@ class TrafficAccidentsSchema:
 
 @strawberry.type
 class EducationSchema:
+    """
+        Represents the schema for education information
+    """
+
     description: str
     age: str
     area: str
@@ -41,14 +61,34 @@ class Query:
 
     @strawberry.field
     def demographics(self, area: str) -> List[DemographicSchema]:
+        """
+
+        Args:
+            area (str): The area for which traffic accidents data should be retrieved
+
+        Returns:
+            List[DemographicSchema]: A list of `DemographicSchema` objects
+
+        """
         db = next(get_db())
         demographics = db.query(DemographicsModel).filter(
             DemographicsModel.area == area).all()
 
         return demographics
 
+
+
     @strawberry.field
     def unemployment_rate(self, area: str) -> List[EmploymentSchema]:
+        """
+
+        Args:
+            area (str): The area for which traffic accidents data should be retrieved
+
+        Returns:
+            List[EmploymentSchema]: A list of `EmploymentSchema` objects
+
+        """
         db = next(get_db())
         unemployment_data = db.query(EmploymentRate).filter(
             EmploymentRate.area == area).all()
@@ -77,16 +117,38 @@ class Query:
 
         return res
 
+
+
     @strawberry.field
     def traffic_accidents(self, area: str) -> List[TrafficAccidentsSchema]:
+        """
+
+        Args:
+            area (str): The area for which traffic accidents data should be retrieved
+
+        Returns:
+            List[TrafficAccidentsSchema]: A list of `TrafficAccidentsSchema` objects
+
+        """
         db = next(get_db())
         traffic_accidents = db.query(TrafficAccidents).filter(
             TrafficAccidents.area == area).all()
 
         return traffic_accidents
 
+
+
     @strawberry.field
     def traffic_accidents_sum(self, area: str) -> List[TrafficAccidentsSchema]:
+        """
+
+        Args:
+            area (str): The area for which traffic accidents data should be retrieved
+
+        Returns:
+            List[TrafficAccidentsSchema]: A list of `TrafficAccidentsSchema` objects (sum by years)
+
+        """
         db = next(get_db())
         traffic_accidents = (db.query(
             TrafficAccidents.area, TrafficAccidents.year,
@@ -94,18 +156,29 @@ class Query:
                 TrafficAccidents.area == area).group_by(TrafficAccidents.year))
 
         result = []
-        for area, year, total in traffic_accidents:
+        for a, year, total in traffic_accidents:
             result.append(
                 TrafficAccidentsSchema(
                     description="Total traffic accidents per year",
-                    area=area,
+                    area=a,
                     year=year,
                     value=total))
 
         return result
 
+
+
     @strawberry.field
     def education(self, area: str) -> List[EducationSchema]:
+        """
+
+        Args:
+            area (str): The area for which traffic accidents data should be retrieved
+
+        Returns:
+            List[EducationSchema]: A list of `EducationSchema` objects
+
+        """
         db = next(get_db())
         education = db.query(Education).filter(Education.area == area).all()
 
