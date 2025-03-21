@@ -10,6 +10,9 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from starlette.responses import JSONResponse
 import strawberry
+from strawberry.fastapi import GraphQLRouter
+
+from fetchers.fetcher import run_all_fetchers
 from schema import Query
 
 app = FastAPI()
