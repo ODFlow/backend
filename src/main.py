@@ -79,8 +79,3 @@ graphql_app = GraphQLRouter(schema=schema,
                             dependencies=[Depends(check_rate_limit)])
 
 app.include_router(router=graphql_app, prefix='/graphql')
-
-
-@app.get("/")
-async def root():
-    return {"message": "test"}
