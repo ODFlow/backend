@@ -1,3 +1,4 @@
+import os
 import logging
 import redis
 
@@ -35,6 +36,7 @@ scheduler.add_job(cron_job,
 schema = strawberry.federation.Schema(query=Query)
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
+redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 limiter = Limiter(key_func=get_remote_address,
                   storage_uri="redis://localhost:6379/0")
 app = FastAPI()
