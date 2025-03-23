@@ -27,11 +27,15 @@ def cron_job():
         logger.error("Error %s", e)
 
 
+
+
+'''
 scheduler = BackgroundScheduler()
 scheduler.add_job(cron_job,
                   CronTrigger(month="1,7", day="1", hour="5", minute="0"),
                   id="data_update",
                   name="Update all data")
+'''
 
 schema = strawberry.federation.Schema(query=Query)
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -52,6 +56,7 @@ class TriggerUpdate(BaseModel):
     key: str
 
 
+# json parameters should be updated before triggering the update
 @app.post(f"/trigger-update/{update_url}")
 async def trigger_fetch(t: TriggerUpdate, background_tasks: BackgroundTasks):
     if t.key != update_key:
