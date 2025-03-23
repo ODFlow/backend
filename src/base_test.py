@@ -9,8 +9,10 @@ def run_test():
                                text=True)
 
     try:
-        _, _ = process.communicate(timeout=7)
+        stdout, stderr = process.communicate(timeout=7)
         print(f"Exit code: {process.returncode}")
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
 
         if process.returncode != 0:
             sys.exit(1)

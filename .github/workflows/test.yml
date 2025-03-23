@@ -14,6 +14,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-server --version" --health-interval=5s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,7 +34,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip && \
           pip install -r requirements.txt && \
-          pip install pylint
+          pip install pylint setuptools
         working-directory: ./
 
       - name: List Python files
