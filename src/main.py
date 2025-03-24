@@ -28,15 +28,6 @@ def cron_job():
 
 
 
-
-'''
-scheduler = BackgroundScheduler()
-scheduler.add_job(cron_job,
-                  CronTrigger(month="1,7", day="1", hour="5", minute="0"),
-                  id="data_update",
-                  name="Update all data")
-'''
-
 schema = strawberry.federation.Schema(query=Query)
 
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
@@ -86,4 +77,4 @@ async def rate_limit_exception(request: Request, exc: RateLimitExceeded):
 graphql_app = GraphQLRouter(schema=schema,
                             dependencies=[Depends(check_rate_limit)])
 
-app.include_router(router=graphql_app, prefix='/graphql')
+app.include_router(router=graphql_app, prefix='/graphql/v1/city_insights')
