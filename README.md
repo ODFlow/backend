@@ -17,7 +17,7 @@
 4. Pull the image <br>
 Command can be found here: [click](https://github.com/ODFlow/backend/pkgs/container/backend)<br>
    `$ docker pull ghcr.io/odflow/backend:sha-[...]`
-   
+5. Download docker compose [file](docker-compose.yml)
 6. Run the image <br>
    `cd backend` =>
    `docker-compose up`
@@ -35,5 +35,8 @@ Command can be found here: [click](https://github.com/ODFlow/backend/pkgs/contai
 3. Install dependencies: <br>
 ` pip install -r requirements.txt `
 
-4. Run the app: <br>
+4. Run the redis server (port 6379): <br>
+` redis-server `
+
+5. Run the app: <br>
 ` uvicorn main:app --reload `
