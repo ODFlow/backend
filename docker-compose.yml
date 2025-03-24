@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    image: ghcr.io/odflow/backend:latest
     ports:
       - "8000:8000"
     volumes:
