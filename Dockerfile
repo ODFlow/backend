@@ -22,5 +22,5 @@ RUN mkdir -p /app/data
 EXPOSE 8000
 WORKDIR /app/src
 
-CMD ["./wait-for-it.sh", "redis:6379", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/app/wait-for-it.sh", "redis:6379", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
