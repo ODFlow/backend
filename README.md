@@ -19,8 +19,10 @@ Command can be found here: [click](https://github.com/ODFlow/backend/pkgs/contai
    `$ docker pull ghcr.io/odflow/backend:sha-[...]`
 5. Download docker compose [file](docker-compose.yml)
 6. Run the image <br>
-   `cd backend` =>
+   `cd folder` => <br> `move the docker-compose.yml file to the folder` => <br>
    `docker-compose up`
+7. Open:
+`localhost:8000/graphql/v1/city_insights`
 
 <br>
 

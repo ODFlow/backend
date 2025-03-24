@@ -6,7 +6,7 @@ from typing import List
 import strawberry
 from sqlalchemy.sql import func
 
-from models import DemographicsModel, EmploymentRate, TrafficAccidents, Education, get_db
+from models import DemographicsModel, EmploymentRate, TrafficAccidents, Education, Income, get_db
 
 
 @strawberry.type
@@ -54,6 +54,17 @@ class EducationSchema:
     age: str
     area: str
     value: int
+
+@strawberry.type
+class IncomeSchema:
+    """
+    Represents the schema for income information
+    """
+
+    description: str
+    value: int
+    area: str
+
 
 
 @strawberry.type
@@ -131,10 +142,10 @@ class Query:
 
         """
         db = next(get_db())
-        traffic_accidents = db.query(TrafficAccidents).filter(
+        data = db.query(TrafficAccidents).filter(
             TrafficAccidents.area == area).all()
 
-        return traffic_accidents
+        return data
 
 
 
@@ -180,9 +191,26 @@ class Query:
 
         """
         db = next(get_db())
-        education = db.query(Education).filter(Education.area == area).all()
+        data = db.query(Education).filter(Education.area == area).all()
 
-        return education
+        return data
+
+    @strawberry.field
+    def income(self, area: str) -> List[IncomeSchema]:
+        """
+
+        Args:
+            area: The area for which income data should be retrieved
+
+        Returns:
+            List[IncomeSchema]: A list of `IncomeSchema` objects
+
+        """
+
+        db = next(get_db())
+        data = db.query(Income).filter(Income.area == area).all()
+
+        return data
 
 
 schema = strawberry.Schema(query=Query)
