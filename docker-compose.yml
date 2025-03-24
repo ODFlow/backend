@@ -4,9 +4,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./src/:app/src
-      - ./db/:app/db
-      - ./config/:app/config
+      - ./src:/app/src
+      - ./db:/app/db
+      - ./config:/app/config
     depends_on:
       - redis
     environment:
