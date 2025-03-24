@@ -1,6 +1,6 @@
 <div align="center">
 
-<h3> Quickstart </h4>
+<h3> Quickstart </h3>
 
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ODFlow_backend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=ODFlow_backend)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ODFlow/backend/docker-build.yml?color=%233e75b5)
@@ -15,10 +15,12 @@
   `docker login ghcr.io`
 
 4. Pull the image <br>
-   `$ docker pull ghcr.io/odflow/backend:sha-f04d1f6`
+Command can be found here: [click](https://github.com/ODFlow/backend/pkgs/container/backend)<br>
+   `$ docker pull ghcr.io/odflow/backend:sha-[...]`
    
 6. Run the image <br>
-   `$ docker run -p 8000:8000 ghcr.io/odflow/backend:[sha]`
+   `cd backend` =>
+   `docker-compose up`
 
 <br>
 
