@@ -38,11 +38,12 @@ scheduler.add_job(cron_job,
 '''
 
 schema = strawberry.federation.Schema(query=Query)
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+redis_client = redis.from_url(redis_url)
+
 limiter = Limiter(key_func=get_remote_address,
-                  storage_uri="redis://localhost:6379/0")
+                  storage_uri=redis_url)
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
