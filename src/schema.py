@@ -4,9 +4,10 @@ from statistics import mean
 from typing import List
 
 import strawberry
+import numpy as np
 from sqlalchemy.sql import func
 
-from models import DemographicsModel, EmploymentRate, TrafficAccidents, Education, Income, get_db
+from models import DemographicsModel, EmploymentRate, TrafficAccidents, Education, CrimeRate, Income, get_db
 
 
 @strawberry.type
@@ -40,7 +41,7 @@ class TrafficAccidentsSchema:
 
     description: str
     area: str
-    year: str
+    timeframe: str
     value: int
 
 
@@ -54,6 +55,7 @@ class EducationSchema:
     age: str
     area: str
     value: int
+
 
 @strawberry.type
 class IncomeSchema:
@@ -108,8 +110,6 @@ class Query:
 
         return demographics
 
-
-
     @strawberry.field
     def unemployment_rate(self, area: str) -> List[EmploymentSchema]:
         """
@@ -149,8 +149,6 @@ class Query:
 
         return res
 
-
-
     @strawberry.field
     def traffic_accidents(self, area: str) -> List[TrafficAccidentsSchema]:
         """
@@ -168,8 +166,6 @@ class Query:
 
         return data
 
-
-
     @strawberry.field
     def traffic_accidents_sum(self, area: str) -> List[TrafficAccidentsSchema]:
         """
@@ -183,29 +179,27 @@ class Query:
         """
         db = next(get_db())
         traffic_accidents = (db.query(
-            TrafficAccidents.area, TrafficAccidents.year,
+            TrafficAccidents.area, TrafficAccidents.timeframe,
             func.sum(TrafficAccidents.value)).filter(
-                TrafficAccidents.area == area).group_by(TrafficAccidents.year))
+                TrafficAccidents.area == area).group_by(TrafficAccidents.timeframe))
 
         result = []
-        for a, year, total in traffic_accidents:
+        for a, timeframe, total in traffic_accidents:
             result.append(
                 TrafficAccidentsSchema(
                     description="Total traffic accidents per year",
                     area=a,
-                    year=year,
+                    timeframe=timeframe,
                     value=total))
 
         return result
-
-
 
     @strawberry.field
     def education(self, area: str) -> List[EducationSchema]:
         """
 
         Args:
-            area (str): The area for which traffic accidents data should be retrieved
+            area (str): The area for which education data should be retrieved
 
         Returns:
             List[EducationSchema]: A list of `EducationSchema` objects
