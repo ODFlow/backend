@@ -233,5 +233,74 @@ class Query:
 
         return data
 
+    @strawberry.field
+    def crimes(self, area: str) -> List[CrimeRateSchema]:
+
+        db = next(get_db())
+        q = (db.query(
+            CrimeRate.area, CrimeRate.description,
+            func.sum(CrimeRate.value)).filter(CrimeRate.area == area).group_by(
+                CrimeRate.description))
+
+        result = []
+        for a, b, c in q:
+            result.append(CrimeRateSchema(area=a, description=b, value=c))
+
+        return result
+
+    @strawberry.field
+    def safety_rating(self, area: str) -> SafetyRatingSchema:
+
+        total_weighted_crime = 0
+        crime_weights = {
+            "Total of thefts 28:1-3": 1.0,
+            "Robbery 31:1-2 total": 2.5,
+            "Damage to property 35:1-3 total": 1.2,
+            "Offences against life total 21:1-3,34a:1": 5.0,
+            "Sexual crimes": 4.5,
+            "Crimes against public authority and public peace": 3.0,
+            "Endangerment of traffic safety, hit-and-run 23:1,11": 2.0,
+            "Aggravated endangerment of traffic safety 23:2": 2.8,
+            "Drunken driving 23:3-4 total": 1.5,
+            "Offences involving narcotics 50:1-4": 2.3
+        }
+
+        db = next(get_db())
+
+        population_data = (db.query(DemographicsModel).filter(
+            DemographicsModel.area == area,
+            DemographicsModel.description == 'Population 31 Dec').first())
+
+        crime_data = (db.query(
+            CrimeRate.area, CrimeRate.description,
+            func.sum(CrimeRate.value).label('total_crimes')).filter(
+                CrimeRate.area == area).group_by(CrimeRate.description))
+
+        for crime_record in crime_data:
+            crime_description = crime_record.description
+            crime_total = crime_record.total_crimes
+
+            matched_weight = None
+
+            for crime_type, weight in crime_weights.items():
+
+                if crime_type in crime_description:
+                    matched_weight = weight
+                    break
+
+            if matched_weight is not None:
+                total_weighted_crime += crime_total * matched_weight
+
+        crime_rate_per_100k = (total_weighted_crime /
+                               population_data.value) * 100_000
+        safety_rating = round(np.clip(200 * np.exp(-0.0002 * crime_rate_per_100k), 0,
+                                99.5), 2)
+
+        return SafetyRatingSchema(
+            area=area,
+            description="Safety Rating",
+            value=safety_rating,
+        )
+
 
 schema = strawberry.Schema(query=Query)
