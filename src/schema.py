@@ -66,6 +66,27 @@ class IncomeSchema:
     area: str
 
 
+@strawberry.type
+class CrimeRateSchema:
+    """
+    Represents the schema for crime rate information
+    """
+
+    description: str
+    value: float
+    area: str
+
+
+@strawberry.type
+class SafetyRatingSchema:
+    """
+    Represents the schema for Safety Rating information
+    """
+
+    description: str
+    value: float
+    area: str
+
 
 @strawberry.type
 class Query:
