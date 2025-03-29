@@ -30,11 +30,10 @@ def cron_job():
 
 schema = strawberry.federation.Schema(query=Query)
 
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-redis_client = redis.from_url(redis_url)
 
-limiter = Limiter(key_func=get_remote_address,
-                  storage_uri=redis_url)
+
+
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -43,19 +42,6 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 update_key = 'update_key' # should be changed, will be moved to .env
 update_url = 'update' # should be changed, will be moved to .env
 
-
-class TriggerUpdate(BaseModel):
-    key: str
-
-
-# json parameters should be updated before triggering the update
-@app.post(f"/trigger-update/{update_url}")
-async def trigger_fetch(t: TriggerUpdate, background_tasks: BackgroundTasks):
-    if t.key != update_key:
-        return JSONResponse(status_code=400, content={"message": "Invalid Key"})
-
-    background_tasks.add_task(cron_job)
-    return {"message": "Success"}
 
 
 @limiter.limit("60/minute")
