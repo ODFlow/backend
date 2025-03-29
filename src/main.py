@@ -39,11 +39,6 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-update_key = 'update_key' # should be changed, will be moved to .env
-update_url = 'update' # should be changed, will be moved to .env
-
-
-
 @limiter.limit("60/minute")
 async def check_rate_limit(request: Request):
     return True
@@ -61,6 +56,7 @@ async def rate_limit_exception(request: Request, exc: RateLimitExceeded):
 
 
 graphql_app = GraphQLRouter(schema=schema,
+                            graphiql=False,
                             dependencies=[Depends(check_rate_limit)])
 
 app.include_router(router=graphql_app, prefix='/graphql/v1/city_insights')
