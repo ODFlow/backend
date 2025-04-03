@@ -106,7 +106,7 @@ class Query:
         """
         db = next(get_db())
         demographics = db.query(DemographicsModel).filter(
-            DemographicsModel.area == area).all()
+            func.lower(DemographicsModel.area) == func.lower(area)).all()
 
         return demographics
 
@@ -123,7 +123,7 @@ class Query:
         """
         db = next(get_db())
         unemployment_data = db.query(EmploymentRate).filter(
-            EmploymentRate.area == area).all()
+            EmploymentRate.area.ilike(area)).all()
 
         yearly_data = {}
         description = "average unemployment rate"
@@ -162,7 +162,7 @@ class Query:
         """
         db = next(get_db())
         data = db.query(TrafficAccidents).filter(
-            TrafficAccidents.area == area).all()
+            TrafficAccidents.area.ilike(area)).all()
 
         return data
 
@@ -181,7 +181,7 @@ class Query:
         traffic_accidents = (db.query(
             TrafficAccidents.area, TrafficAccidents.timeframe,
             func.sum(TrafficAccidents.value)).filter(
-                TrafficAccidents.area == area).group_by(TrafficAccidents.timeframe))
+                TrafficAccidents.area.ilike(area)).group_by(TrafficAccidents.timeframe))
 
         result = []
         for a, timeframe, total in traffic_accidents:
@@ -206,7 +206,7 @@ class Query:
 
         """
         db = next(get_db())
-        data = db.query(Education).filter(Education.area == area).all()
+        data = db.query(Education).filter(Education.area.ilike(area)).all()
 
         return data
 
@@ -262,13 +262,13 @@ class Query:
         db = next(get_db())
 
         population_data = (db.query(DemographicsModel).filter(
-            DemographicsModel.area == area,
+            DemographicsModel.area == area.capitalize(),
             DemographicsModel.description == 'Population 31 Dec').first())
 
         crime_data = (db.query(
             CrimeRate.area, CrimeRate.description,
             func.sum(CrimeRate.value).label('total_crimes')).filter(
-                CrimeRate.area == area).group_by(CrimeRate.description))
+                CrimeRate.area == area.capitalize()).group_by(CrimeRate.description))
 
         for crime_record in crime_data:
             crime_description = crime_record.description
