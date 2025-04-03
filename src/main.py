@@ -1,6 +1,5 @@
 import os
 import logging
-import redis
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -29,12 +28,7 @@ def cron_job():
 
 
 schema = strawberry.federation.Schema(query=Query)
-
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-redis_client = redis.from_url(redis_url)
-
-limiter = Limiter(key_func=get_remote_address,
-                  storage_uri=redis_url)
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
 
 # Add CORS middleware
